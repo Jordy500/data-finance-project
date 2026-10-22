@@ -17,3 +17,9 @@ data/raw/*
 # Base locale
 *.db
 *.sqlite
+
+# dbt (fichiers générés)
+dbt/target/
+dbt/dbt_packages/
+dbt/logs/
+logs/
