@@ -1,0 +1,62 @@
+version: 2
+
+models:
+  - name: stg_taux_directeur_bce
+    description: Taux directeur de la BCE, une ligne par décision.
+    columns:
+      - name: date_decision
+        description: Date de la décision de la BCE.
+        data_tests: [not_null, unique]
+      - name: taux_directeur_pct
+        description: Taux directeur en vigueur après la décision, en %.
+        data_tests: [not_null]
+
+  - name: stg_taux_credit_habitat
+    description: Taux moyen des crédits à l'habitat, par mois.
+    columns:
+      - name: mois
+        description: Premier jour du mois.
+        data_tests: [not_null, unique]
+      - name: taux_habitat_pct
+        description: Taux en %.
+        data_tests: [not_null]
+
+  - name: stg_volume_credit_habitat
+    description: Production de crédits à l'habitat, par mois.
+    columns:
+      - name: mois
+        description: Premier jour du mois.
+        data_tests: [not_null, unique]
+      - name: volume_habitat_meur
+        description: Volume en millions d'euros.
+        data_tests: [not_null]
+
+  - name: stg_taux_credit_conso
+    description: Taux moyen des crédits à la consommation, par mois.
+    columns:
+      - name: mois
+        description: Premier jour du mois.
+        data_tests: [not_null, unique]
+      - name: taux_conso_pct
+        description: Taux en %.
+        data_tests: [not_null]
+
+  - name: stg_volume_credit_conso
+    description: Production de crédits à la consommation, par mois.
+    columns:
+      - name: mois
+        description: Premier jour du mois.
+        data_tests: [not_null, unique]
+      - name: volume_conso_meur
+        description: Volume en millions d'euros.
+        data_tests: [not_null]
+
+  - name: stg_ipc
+    description: Indice des prix à la consommation (ensemble des ménages, base 2025), par mois.
+    columns:
+      - name: mois
+        description: Premier jour du mois.
+        data_tests: [not_null, unique]
+      - name: ipc
+        description: Valeur de l'indice.
+        data_tests: [not_null]

@@ -1,0 +1,47 @@
+version: 2
+
+models:
+  - name: fct_credit_mensuel
+    description: Une ligne par mois (2015-01 à 2026-08) avec le coût, le volume du crédit aux ménages en France, l'inflation et le taux réel.
+    columns:
+      - name: mois
+        description: Premier jour du mois.
+        data_tests:
+          - not_null
+          - unique
+      - name: taux_directeur_pct
+        description: Taux directeur de la BCE en vigueur à la fin du mois, en %.
+        data_tests:
+          - not_null
+      - name: inflation_12m_pct
+        description: Inflation sur 12 mois calculée sur l'IPC ensemble des ménages (base 2025), en %.
+        data_tests:
+          - not_null
+      - name: taux_habitat_pct
+        description: Taux moyen des crédits à l'habitat, en %.
+        data_tests:
+          - not_null
+      - name: taux_reel_habitat_pct
+        description: Taux habitat moins inflation sur 12 mois, en points.
+      - name: taux_conso_pct
+        description: Taux moyen des crédits à la consommation, en %.
+        data_tests:
+          - not_null
+      - name: taux_reel_conso_pct
+        description: Taux conso moins inflation sur 12 mois, en points.
+      - name: volume_habitat_meur
+        description: Production de crédits à l'habitat, en millions d'euros.
+        data_tests:
+          - not_null
+      - name: volume_habitat_var_an_pct
+        description: Variation du volume habitat par rapport au même mois un an avant, en %. Vide en 2015.
+      - name: volume_habitat_moy12m_meur
+        description: Moyenne du volume habitat sur 12 mois glissants, en millions d'euros. Vide avant 2015-12.
+      - name: volume_conso_meur
+        description: Production de crédits à la consommation, en millions d'euros.
+        data_tests:
+          - not_null
+      - name: volume_conso_var_an_pct
+        description: Variation du volume conso par rapport au même mois un an avant, en %. Vide en 2015.
+      - name: volume_conso_moy12m_meur
+        description: Moyenne du volume conso sur 12 mois glissants, en millions d'euros. Vide avant 2015-12.
