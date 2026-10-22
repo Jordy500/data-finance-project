@@ -1,0 +1,13 @@
+version: 2
+
+sources:
+  - name: raw
+    description: Séries brutes BCE et INSEE chargées dans BigQuery par src/load_bigquery.py
+    schema: raw
+    tables:
+      - name: taux_directeur_bce
+      - name: taux_credit_habitat
+      - name: volume_credit_habitat
+      - name: taux_credit_conso
+      - name: volume_credit_conso
+      - name: ipc_ensemble
