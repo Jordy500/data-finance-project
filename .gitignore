@@ -1,0 +1,19 @@
+# Environnement Python
+.venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Secrets (clés API, identifiants)
+.env
+
+# macOS
+.DS_Store
+
+# Données brutes téléchargées (reproductibles via src/, donc non versionnées)
+data/raw/*
+!data/raw/.gitkeep
+
+# Base locale
+*.db
+*.sqlite

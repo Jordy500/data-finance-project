@@ -1,0 +1,103 @@
+# Taux d'intérêt, crédit aux ménages et inflation en France
+
+Projet portfolio de bout en bout sur des données publiques : collecte (API), entrepôt de données (BigQuery), transformations testées (dbt), conteneurisation (Docker) et restitution (Tableau Public).
+
+## Question métier
+
+> Depuis 2015, comment la remontée des taux de la BCE et l'inflation se sont-elles répercutées sur le coût et le volume du crédit aux ménages en France ? Le taux réel (taux du crédit moins inflation) est-il passé en territoire négatif puis positif, et à quel moment la production de crédit a-t-elle décroché ?
+
+## Lecture en trois temps
+
+| Temps | Période | Ce que le projet montre |
+|---|---|---|
+| Passé | 2015 – 2021 | Taux bas, inflation faible, crédit abondant : la situation de référence |
+| Présent | 2022 – aujourd'hui | Choc d'inflation, remontée des taux, taux réel, ralentissement du crédit |
+| Futur | Prochains mois | Scénarios simples (impact d'un taux à X % sur une mensualité). Ce sont des simulations, pas des prévisions |
+
+## Indicateurs
+
+- Taux directeurs de la BCE
+- Taux des nouveaux crédits à l'habitat et à la consommation (France)
+- Production de nouveaux crédits et encours aux ménages
+- Inflation : IPC, glissement annuel
+- Calculé : taux réel = taux du crédit − inflation
+
+## Sources (données publiques, gratuites)
+
+| Source | Contenu |
+|---|---|
+| Banque de France, Webstat | Taux et volumes de crédits aux ménages |
+| INSEE, BDM | Indice des prix à la consommation |
+| BCE, Data Portal | Taux directeurs, taux bancaires |
+
+Séries retenues (période : janvier 2015 à août 2026, mensuel) :
+
+| Série | Source | Identifiant |
+|---|---|---|
+| Taux directeur (refinancement) | BCE | `FM.B.U2.EUR.4F.KR.MRR_FR.LEV` |
+| Taux des nouveaux crédits à l'habitat | BCE | `MIR.M.FR.B.A2C.A.R.A.2250.EUR.N` |
+| Volume des nouveaux crédits à l'habitat | BCE | `MIR.M.FR.B.A2C.A.B.A.2250.EUR.N` |
+| Taux des nouveaux crédits à la consommation | BCE | `MIR.M.FR.B.A2B.A.R.A.2250.EUR.N` |
+| Volume des nouveaux crédits à la consommation | BCE | `MIR.M.FR.B.A2B.A.B.A.2250.EUR.N` |
+| IPC, base 2025, ensemble des ménages, France | INSEE | `011814630` |
+
+Notes :
+- Les volumes sont en millions d'euros.
+- Le taux directeur n'est publié qu'aux dates de décision : il est ramené au mois.
+- L'IPC et le taux directeur sont téléchargés depuis 2014 pour calculer l'inflation sur 12 mois dès 2015.
+- L'INSEE est passé à la base 2025 en janvier 2026 : les séries en base 2015 sont arrêtées.
+
+## Outils
+
+Python, SQL, BigQuery, dbt, Docker, Tableau Public, GitHub.
+
+## Structure du projet
+
+```
+data/raw/        données brutes téléchargées (non versionnées)
+data/processed/  données nettoyées
+src/             scripts de collecte et de chargement
+sql/             requêtes d'analyse
+notebooks/       exploration
+dashboard/       exports et captures du tableau de bord
+docs/            notes de cadrage et choix méthodologiques
+```
+
+## Installation (macOS)
+
+Python 3.10 ou plus est nécessaire (3.12 avec Homebrew : `brew install python@3.12`).
+
+```bash
+python3.12 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+Collecte des données :
+
+```bash
+python src/collect.py
+```
+
+Chargement dans BigQuery (projet en mode sandbox, sans facturation) :
+
+```bash
+brew install --cask gcloud-cli
+gcloud auth application-default login
+cp .env.example .env   # puis renseigner GCP_PROJECT_ID
+python src/load_bigquery.py
+```
+
+Le sandbox supprime les tables après 60 jours : il suffit de relancer le chargement pour les recréer.
+
+## Avancement
+
+- [x] Cadrage et vérification des sources
+- [x] Structure du projet
+- [x] Collecte des données (BCE, INSEE)
+- [x] Exploration des données brutes
+- [x] Chargement dans BigQuery
+- [ ] Transformations avec dbt (modèles, tests de qualité)
+- [ ] Conteneurisation avec Docker
+- [ ] Tableau de bord Tableau Public
+- [ ] Conclusions et publication
