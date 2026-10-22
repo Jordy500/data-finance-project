@@ -1,0 +1,9 @@
+.venv/
+.git/
+.env
+data/raw/
+dbt/target/
+dbt/logs/
+**/__pycache__/
+notebooks/
+*.ipynb
