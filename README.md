@@ -22,6 +22,31 @@ Projet portfolio de bout en bout sur des données publiques : collecte (API), en
 - Inflation : IPC, glissement annuel
 - Calculé : taux réel = taux du crédit − inflation
 
+## Architecture du pipeline
+
+```
+API BCE / INSEE  →  BigQuery (raw)  →  dbt (staging → intermediate → marts)  →  CSV  →  Tableau Public
+```
+
+1. `src/collect.py` télécharge les séries et les range dans `data/raw/`.
+2. `src/load_bigquery.py` les charge telles quelles dans le dataset `raw`.
+3. dbt les nettoie (staging), les ramène au mois et calcule l'inflation (intermediate), puis assemble la table `analytics.fct_credit_mensuel` (marts).
+4. `src/export_csv.py` écrit cette table dans `data/processed/` pour Tableau Public.
+
+Graphe de dépendances des modèles dbt :
+
+![Lignage dbt](docs/lineage.png)
+
+## Modèles dbt et tests
+
+| Couche | Modèles | Rôle |
+|---|---|---|
+| staging | 6 vues `stg_*` | renomment les colonnes, convertissent les dates |
+| intermediate | `int_taux_directeur_mensuel`, `int_inflation` | taux directeur ramené au mois, inflation sur 12 mois |
+| marts | `fct_credit_mensuel` | une ligne par mois (140 lignes, de janvier 2015 à août 2026) |
+
+30 tests dbt, tous au vert : colonnes non nulles et uniques, aucun mois manquant, valeurs dans des plages plausibles, taux réel égal au taux du crédit moins l'inflation.
+
 ## Sources (données publiques, gratuites)
 
 | Source | Contenu |
@@ -56,7 +81,8 @@ Python, SQL, BigQuery, dbt, Docker, Tableau Public, GitHub.
 ```
 data/raw/        données brutes téléchargées (non versionnées)
 data/processed/  données nettoyées
-src/             scripts de collecte et de chargement
+src/             scripts de collecte, de chargement et d'export
+dbt/             modèles et tests dbt
 sql/             requêtes d'analyse
 notebooks/       exploration
 dashboard/       exports et captures du tableau de bord
@@ -90,6 +116,34 @@ python src/load_bigquery.py
 
 Le sandbox supprime les tables après 60 jours : il suffit de relancer le chargement pour les recréer.
 
+Transformations dbt (depuis le dossier `dbt/`) :
+
+```bash
+set -a; source ../.env; set +a
+dbt run
+dbt test
+```
+
+Export du modèle final en CSV pour Tableau Public :
+
+```bash
+python src/export_csv.py
+```
+
+## Avec Docker
+
+Chaque étape du pipeline a son service, ou toute la chaîne d'un coup. Les identifiants gcloud sont montés en lecture seule, rien de secret n'est dans l'image.
+
+```bash
+docker compose run --rm collect
+docker compose run --rm load
+docker compose run --rm dbt-run
+docker compose run --rm dbt-test
+docker compose run --rm export
+
+docker compose run --rm pipeline   # tout à la suite
+```
+
 ## Avancement
 
 - [x] Cadrage et vérification des sources
@@ -97,7 +151,7 @@ Le sandbox supprime les tables après 60 jours : il suffit de relancer le charge
 - [x] Collecte des données (BCE, INSEE)
 - [x] Exploration des données brutes
 - [x] Chargement dans BigQuery
-- [ ] Transformations avec dbt (modèles, tests de qualité)
-- [ ] Conteneurisation avec Docker
+- [x] Transformations avec dbt (modèles, tests de qualité)
+- [x] Conteneurisation avec Docker
 - [ ] Tableau de bord Tableau Public
 - [ ] Conclusions et publication
