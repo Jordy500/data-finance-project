@@ -2,6 +2,16 @@
 
 Projet portfolio de bout en bout sur des données publiques : collecte (API), entrepôt de données (BigQuery), transformations testées (dbt), conteneurisation (Docker) et restitution (Tableau Public).
 
+## Résultat
+
+Tableau de bord interactif : [voir sur Tableau Public](https://public.tableau.com/app/profile/jordan.ngueko/viz/Crditetinflation/Dashboard)
+
+![Tableau de bord](docs/dashboard.png)
+
+*Capture avec une simulation à 250 000 € sur 10 ans, +1,25 point de taux. Chaque visiteur peut lancer la sienne.*
+
+Il contient quatre indicateurs, quatre graphiques (coût du crédit face à l'inflation, taux réel, volumes, mensualité selon le mois), un filtre de période et un simulateur de mensualité (montant, durée, variation du taux).
+
 ## Question métier
 
 > Depuis 2015, comment la remontée des taux de la BCE et l'inflation se sont-elles répercutées sur le coût et le volume du crédit aux ménages en France ? Le taux réel (taux du crédit moins inflation) est-il passé en territoire négatif puis positif, et à quel moment la production de crédit a-t-elle décroché ?
@@ -13,6 +23,20 @@ Projet portfolio de bout en bout sur des données publiques : collecte (API), en
 | Passé | 2015 – 2021 | Taux bas, inflation faible, crédit abondant : la situation de référence |
 | Présent | 2022 – aujourd'hui | Choc d'inflation, remontée des taux, taux réel, ralentissement du crédit |
 | Futur | Prochains mois | Scénarios simples (impact d'un taux à X % sur une mensualité). Ce sont des simulations, pas des prévisions |
+
+## Ce que montrent les données
+
+- **Le taux réel des crédits à l'habitat** (taux moins inflation) est passé sous zéro pendant 44 mois entre 2018 et 2023. Son point bas est de −4,63 points.
+- **Il est redevenu positif** : +0,84 point au dernier mois publié, avec une inflation de 2,36 %.
+- **La production de crédits à l'habitat** recule de 2,7 % sur un an au dernier mois. Le graphique des volumes met en avant trois épisodes : un pic en 2017 (à confirmer), un net recul en 2018 et une forte baisse en 2023, après la hausse des taux.
+- **Sur un prêt de 200 000 € à 20 ans**, un point de taux en plus ajoute environ 104 € à la mensualité.
+
+## Limites
+
+- Le simulateur est un scénario à taux fixe, hors assurance et frais. Ce n'est pas une prévision.
+- Le taux réel est une simple soustraction (taux du crédit − inflation sur 12 mois).
+- Le pic de 2017 sur les volumes est à confirmer : je n'ai pas vérifié si la série inclut les renégociations.
+- Une baisse de la production après une hausse des taux n'est pas une preuve de cause à effet.
 
 ## Indicateurs
 
@@ -153,5 +177,5 @@ docker compose run --rm pipeline   # tout à la suite
 - [x] Chargement dans BigQuery
 - [x] Transformations avec dbt (modèles, tests de qualité)
 - [x] Conteneurisation avec Docker
-- [ ] Tableau de bord Tableau Public
-- [ ] Conclusions et publication
+- [x] Tableau de bord Tableau Public
+- [x] Conclusions et publication
