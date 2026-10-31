@@ -1,5 +1,7 @@
 # Taux d'intérêt, crédit aux ménages et inflation en France
 
+[![dbt CI](https://github.com/Jordy500/data-finance-project/actions/workflows/dbt.yml/badge.svg)](https://github.com/Jordy500/data-finance-project/actions/workflows/dbt.yml)
+
 Projet portfolio de bout en bout sur des données publiques : collecte (API), entrepôt de données (BigQuery), transformations testées (dbt), conteneurisation (Docker) et restitution (Tableau Public).
 
 ## Résultat
@@ -69,7 +71,7 @@ Graphe de dépendances des modèles dbt :
 | intermediate | `int_taux_directeur_mensuel`, `int_inflation` | taux directeur ramené au mois, inflation sur 12 mois |
 | marts | `fct_credit_mensuel` | une ligne par mois (140 lignes, de janvier 2015 à août 2026) |
 
-30 tests dbt, tous au vert : colonnes non nulles et uniques, aucun mois manquant, valeurs dans des plages plausibles, taux réel égal au taux du crédit moins l'inflation.
+30 tests dbt : colonnes non nulles et uniques, aucun mois manquant, valeurs dans des plages plausibles, taux réel égal au taux du crédit moins l'inflation. Ils tournent automatiquement avec GitHub Actions (`dbt build` sur BigQuery) à chaque push et à chaque pull request vers `main` ; le badge en haut de la page donne le dernier résultat.
 
 ## Sources (données publiques, gratuites)
 

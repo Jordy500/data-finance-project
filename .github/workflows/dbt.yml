@@ -1,0 +1,51 @@
+# lance les modèles et les tests dbt à chaque push ou PR sur main
+name: dbt CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: dbt-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  dbt:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: dbt
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      # seulement dbt, pas tout le requirements.txt (jupyter etc. inutiles ici)
+      - name: Installer dbt
+        run: pip install "dbt-core>=1.12,<1.13" "dbt-bigquery>=1.12,<1.13"
+
+      # écrit la clé du compte de service dans un fichier temporaire du runner
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Vérifier la connexion
+        run: dbt debug --target ci --profiles-dir .
+        env:
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+          GCP_KEYFILE_PATH: ${{ steps.auth.outputs.credentials_file_path }}
+
+      - name: Modèles et tests
+        run: dbt build --target ci --profiles-dir .
+        env:
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+          GCP_KEYFILE_PATH: ${{ steps.auth.outputs.credentials_file_path }}
